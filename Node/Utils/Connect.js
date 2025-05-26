@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const { connect } = require("mongoose");
 
 let cached = global.mongoose;
@@ -18,6 +17,7 @@ const dbConnection = async () => {
     };
 
     cached.promise = connect(process.env.MONG_URL, opts).then((mongoose) => {
+      console.log("MongoDB connected");
       return mongoose;
     });
   }

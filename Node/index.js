@@ -1,36 +1,37 @@
 const express = require("express");
 const UserRoutes = require("./Routes/User.route.js");
-const mongoose = require("mongoose");
 const dbConnect = require("./Utils/Connect.js");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const helmet = require("helmet");
 dotenv.config();
+
 const app = express();
+
 const corsOptions = {
-  origin: "*", // Allow all origins
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allow all HTTP methods
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
 };
 app.use(cors(corsOptions));
 
 const port = process.env.PORT || 7500;
 app.use(express.json());
+app.use(helmet());
 
-app.use(async (req, res, next) => {
-  try {
-    await dbConnect();
-    next();
-  } catch (error) {
-    console.log("Database connection failed:", error.message);
-    res.status(500).json({
-      error: true,
-      message: "Database connection failed",
-    });
-  }
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
+app.use((req, res, next) => {
+  console.log("Request Headers:", req.headers);
+  next();
 });
 
 app.use("/api/data/user", UserRoutes);
 
-app.get("/", (req, res, next) => {
+app.get("/", (req, res) => {
   res.send("Welcome to the server");
 });
 
@@ -41,22 +42,24 @@ app.use((req, res, next) => {
     message: "Page not found",
   });
 });
+
 // Global error handler
 app.use((err, req, res, next) => {
+  console.error(err);
   res.status(500).json({
     error: true,
     message: err.message,
   });
 });
 
-// Start the server
-app.listen(port, () => {
-  dbConnect()
-    .then(() => {
-      console.log("Database connected successfully");
-    })
-    .catch((error) => {
-      console.error("Database connection failed:", error.message);
+// Connect to DB once, then start server
+dbConnect()
+  .then(() => {
+    app.listen(port, () => {
+      console.log("Server Started on port : ", port);
     });
-  console.log("Server Started on port : ", port);
-});
+  })
+  .catch((error) => {
+    console.error("Database connection error:", error);
+    process.exit(1);
+  });

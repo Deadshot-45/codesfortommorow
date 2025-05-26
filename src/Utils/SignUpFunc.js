@@ -1,12 +1,14 @@
 import axios from "axios";
 
-const SignUpFunc = async (email, password) => {
+const SignUpFunc = async (name, email, password, confirmPassword) => {
   try {
     const response = await axios.post(
       "http://localhost:7500/api/data/user/signup",
       {
+        name,
         email,
         password,
+        confirmPassword,
       }
     );
     if (!response.data.error) {

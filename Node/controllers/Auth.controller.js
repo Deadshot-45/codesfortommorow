@@ -13,7 +13,7 @@ const SignUp = async (req, res, next) => {
         message: "Password not matched",
       });
     }
-    const isUser = await User.findone({ email });
+    const isUser = await User.findOne({ email }); // FIXED
     if (isUser) {
       return res.status(400).json({
         error: true,
@@ -53,7 +53,7 @@ const SignIn = async (req, res, next) => {
       });
     }
 
-    const isUser = User.findone({ email });
+    const isUser = await User.findOne({ email }); // FIXED
     if (!isUser) {
       return res.status(400).json({
         error: true,
@@ -121,7 +121,8 @@ const resetPasword = async (req, res, next) => {
       });
     }
 
-    if ((!email, !password || !confirmPassword)) {
+    if (!email || !password || !confirmPassword) {
+      // FIXED
       return res.status(400).json({
         error: true,
         message: "Email and password are required",
@@ -133,11 +134,12 @@ const resetPasword = async (req, res, next) => {
         message: "Password not matched",
       });
     }
-    const isUser = await User.findone({ email });
+    const isUser = await User.findOne({ email }); // FIXED
     if (!isUser) {
-      return res.status(400).json({
+      return res.status(404).json({
+        // FIXED
         error: true,
-        message: "User already exist",
+        message: "User not found",
       });
     }
 

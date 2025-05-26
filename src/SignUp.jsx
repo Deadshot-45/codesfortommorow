@@ -27,8 +27,10 @@ const SignUp = () => {
     const response = await SignUpFunc(name, email, password, confirmPassword);
     if (response.error) {
       console.error(response.message);
+      alert(response.message);
     } else {
       console.log(response.message);
+      alert("Sign up successful! You can now sign in.");
     }
   };
 
@@ -73,7 +75,7 @@ const SignUp = () => {
           <label
             htmlFor="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            
             className="block text-sm font-medium text-gray-700"
           >
             Email:
@@ -83,6 +85,10 @@ const SignUp = () => {
             id="email"
             name="email"
             placeholder="Email Address"
+            onChange={(e) => {
+              setEmail(e.target.value);
+              console.log(`Email: ${e.target.value}`);
+            }}
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
